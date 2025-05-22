@@ -21,3 +21,26 @@ Screenmatch is a Java Spring Boot application that fetches data from the [OMDb A
 
 ## 🧩 Project Structure
 
+
+
+## ▶️ How to Run
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/viniciusberger/screenmatch.git
+   cd screenmatch
+
+
+## Sample output
+Type a show: 
+Breaking Bad
+
+1 - 8.3
+2 - 9.1
+...
+
+Top 5 Episodes:
+Ozymandias - 10.0 - Season 5
+Face Off - 9.9 - Season 4
+...
+
