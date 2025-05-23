@@ -2,14 +2,22 @@ package com.pacoca.screenmatch.services;
 
 import com.pacoca.screenmatch.model.*;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+import io.github.cdimascio.dotenv.Dotenv;
+
+
+
 
 public class Controller {
+    Dotenv dotenv = Dotenv.load();
     private final Service SERVICE = new Service();
     private final Converter CONVERTER = new Converter();
     private final String URL = "https://www.omdbapi.com/?t=";
-    private final String API_KEY = "&apikey=1f3767fa";
+    private final String API_KEY = dotenv.get("OMDB_API_KEY");
+
+
 
 
     private static Scanner sc = new Scanner(System.in);
@@ -17,30 +25,67 @@ public class Controller {
 
     public void menu() {
         List<Season> seasons = new ArrayList<>();
+
+        var menu = "\n" +
+                "1 - Search a show\n" +
+                "2 - Display a show's seasons rating\n" +
+                "3 - Display a show's best 5 episodes\n" +
+                "4 - Display search history\n" +
+                "5 - Get a recommendation\n" +
+                "0 - Exit";
+
+
+        int option = -1;
+        String userEntry;
         Serie show;
 
-        System.out.println("Type a show: ");
-        String userEntry = sc.nextLine();
 
-        show = getShow(userEntry);
-
-        seasons = getSeasons(show);
-
-        seasons.forEach(s -> System.out.println(s.getSeasonNumber() + " - " + s.getRating()));
-
-
-       // best5(userEntry);
+        while (option !=0) {
+            System.out.println(menu);
+            try {
+                option = Integer.parseInt(sc.nextLine());
+            } catch (NumberFormatException e) {
+                option = -1;
+            }
+            switch (option) {
+                case 1:
+                    System.out.println("Type a show: ");
+                    show = getShow(sc.nextLine());
+                    System.out.println(show.getTitle() + "\n - " + show.getRating() + "\n - " + show.getTotalSeason() + " seasons" + "\n - " + show.getCast() + "\n - " + show.getPlot() + "\n - " + show.getGenre());
+                    break;
+                case 2:
+                    System.out.println("Type a show: ");
+                    show = getShow(sc.nextLine());
+                    getSeasons(show).forEach(s -> System.out.println(s.getSeasonNumber() + " - " + s.getRating()));
+                    break;
+                case 3:
+                    System.out.println("Type a show: ");
+                    show = getShow(sc.nextLine());
+                    best5(show.getTitle());
+                    break;
+                case 4:
+                    Serie.listSearchedSeries();
+                    break;
+                case 5:
+                    try {
+                        Service.GetRecomendation();
+                    } catch (IOException | InterruptedException e) {
+                        System.out.println("Error: " + e.getMessage() + "\n we were unable to get the recomendations, please try again later.");
+                    }
+                case 0:
+                    System.out.println("Exiting...");
+                    break;
+            }
+            }
 
     }
 
     private Serie getShow(String show) {
 
         String json = SERVICE.getData(URL + show.replace(" ", "+") + API_KEY);
-        Serie formattedJson = CONVERTER.dataConverter(json, Serie.class);
+        SerieRecord formattedJson = CONVERTER.dataConverter(json, SerieRecord.class);
 
-        System.out.println(formattedJson);
-
-        return formattedJson;
+        return new Serie(formattedJson);
     }
 
     private void displaySeason(String URI) {
@@ -60,7 +105,7 @@ public class Controller {
 
         List<Episode> episodes = new ArrayList<>();
         String json = SERVICE.getData(URL + show.replace(" ", "+") + API_KEY);
-        Serie formattedJson = CONVERTER.dataConverter(json, Serie.class);
+        SerieRecord formattedJson = CONVERTER.dataConverter(json, SerieRecord.class);
 
         for (int i = 1; i < formattedJson.totalSeason(); i++) {
             String seasonJson = SERVICE.getData(URL + show.replace(" ", "+") + "&season=" + i + API_KEY);
@@ -85,17 +130,16 @@ public class Controller {
                 .forEach(e -> System.out.println("\n" + e + "\n"));
     }
 
-
     private List<Season> getSeasons(Serie show) {
 
         List<Season> seasons = new ArrayList<>();
 
-        for (int i = 1; i <= show.totalSeason(); i++) {
+        for (int i = 1; i <= show.getTotalSeason(); i++) {
             double seasonRating = 0;
             int finalI = i;
 
 
-            String seasonJson = SERVICE.getData(URL + show.title().replace(" ", "+") + "&season=" + i + API_KEY);
+            String seasonJson = SERVICE.getData(URL + show.getTitle().replace(" ", "+") + "&season=" + i + API_KEY);
             SeasonRecord seasonFormattedJson = CONVERTER.dataConverter(seasonJson, SeasonRecord.class);
 
 
@@ -118,5 +162,9 @@ public class Controller {
         }
 
         return seasons;
+    }
+
+    public void displayMenu() {
+
     }
 }
