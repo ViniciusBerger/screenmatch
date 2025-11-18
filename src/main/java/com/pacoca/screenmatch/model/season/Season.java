@@ -1,6 +1,8 @@
-package com.pacoca.screenmatch.model;
+package com.pacoca.screenmatch.model.season;
 
 import java.util.List;
+
+import com.pacoca.screenmatch.model.episode.Episode;
 
 public class Season {
 
@@ -35,7 +37,7 @@ public class Season {
         this.totalSeasons = totalSeasons;
     }
 
-    public List<Episode> getEpisode() {
+    public List<Episode> getEpisodes() {
         return episodes;
     }
 

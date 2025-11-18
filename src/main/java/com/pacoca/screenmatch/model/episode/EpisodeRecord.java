@@ -1,4 +1,4 @@
-package com.pacoca.screenmatch.model;
+package com.pacoca.screenmatch.model.episode;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

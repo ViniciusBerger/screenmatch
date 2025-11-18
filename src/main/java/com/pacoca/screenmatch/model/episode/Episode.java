@@ -1,4 +1,4 @@
-package com.pacoca.screenmatch.model;
+package com.pacoca.screenmatch.model.episode;
 
 import java.util.List;
 

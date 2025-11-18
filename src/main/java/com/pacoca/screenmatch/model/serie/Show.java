@@ -1,33 +1,41 @@
-package com.pacoca.screenmatch.model;
+package com.pacoca.screenmatch.model.serie;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class Serie {
+import com.pacoca.screenmatch.model.Category;
+import com.pacoca.screenmatch.model.season.Season;
+
+public class Show {
     private String title;
     private double rating;
     private Integer totalSeason;
-    private Category genre;
+    private Optional<Category> genre;
     private String cast;
     private String poster;
     private String plot;
 
-    private static List<Serie> series = new ArrayList<Serie>();
+    private static List<Show> shows = new ArrayList<Show>();
 
 
-    public Serie() {}
+    public Show() {}
 
-    public Serie(SerieRecord serieRecord) {
+    public Show(ShowRecord serieRecord) {
         this.title = serieRecord.title();
         this.rating = Optional.ofNullable(serieRecord.rating()).map(this::parseRating).orElse(0.0);
         this.totalSeason = serieRecord.totalSeason();
-        this.genre = Category.fromString(serieRecord.genre().split(",")[0]);
+        this.genre = Optional.ofNullable(serieRecord.genre())
+            .map(String::trim)
+            .filter(s -> !s.isEmpty() && !"N/A".equalsIgnoreCase(s))
+            .map(s -> s.split(",")[0])
+            // .map(String::trim)
+            .map(Category::fromString);
         this.cast = serieRecord.cast();
         this.poster = serieRecord.poster();
         this.plot = serieRecord.plot();
 
-        series.add(this);
+        shows.add(this);
     }
 
 
@@ -75,12 +83,8 @@ public class Serie {
         this.totalSeason = totalSeason;
     }
 
-    public Category getGenre() {
+    public Optional<Category> getGenre() {
         return genre;
-    }
-
-    public void setGenre(Category genre) {
-        this.genre = genre;
     }
 
     public String getCast() {
@@ -108,13 +112,13 @@ public class Serie {
     }
 
     public static void listSearchedSeries() {
-        series.forEach(s -> System.out.println(s.getTitle()));
+        shows.forEach(s -> System.out.println(s.getTitle()));
     }
 
     public static String[] getSearchedSeries() {
 
         String[] listSeries;
-        listSeries = series.stream().map(Serie::getTitle).toArray(String[]::new);
+        listSeries = shows.stream().map(Show::getTitle).toArray(String[]::new);
 
 
         return listSeries;

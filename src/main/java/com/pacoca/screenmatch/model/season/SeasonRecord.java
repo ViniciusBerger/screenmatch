@@ -1,7 +1,8 @@
-package com.pacoca.screenmatch.model;
+package com.pacoca.screenmatch.model.season;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.pacoca.screenmatch.model.episode.EpisodeRecord;
 
 import java.util.List;
 
